@@ -271,6 +271,64 @@ WHERE custid IN ( SELECT custid
 반면 상관 부속질의(correlated subquery)는 상위 부속질의의 투플(행/row)을 이용하여 하위 부속질의를 계산한다.
 상위 부속질의와 하위 부속질의가 독립적이지 않고 서로 관련을 맺고 있다.
  
+
+출파사별로 출판사의 평균 도서 가격보다 비싼 도서를 구하여라.
+평균을 구한 후 평균보다 비싼 도서를 구해야 하기 때문에 부속질의 없이 단독 SQL 문으로 작성하기 어렵다.
+하위 부속질의는 상위 부속질의에서 도서와 출판사가 주어지면 종속적으로 출판사의 도서 평균을 구한다.
+상의 부속질의는 이 도서가 평균보다 비싼지 비교한다.
+
+SELECT b1.bookname
+FROM Book b1
+WHERE b1.price > (SELECT avg(b2.price
+		FROM Book b2
+		WHERE b2.publisher = b1.publisher);
+
+상위 부속질의에 사용된 Book 테이블을 b1으로 별칭하고, 하위 부속질의에 사용된 Book 테이블을 b2로 별칭한다.
+
+투플변수 = 테이블 이름이 길거나, 한 개의 테이블이 SQL문에 두 번 사용될 때 혼란을 피하기 위해 테이블에 별칭을 붙여 사용하는데,
+이를 투플 변수(tuple variable)라 한다. 투플 변수는 FROM 절의 테이블 이름 뒤에 표기한다 ( 위의경우 b1, b2 )
+
+부속질의와 조인은 여러 테이블을 하나의 SQL문에서 다루는 점은 같지만 차이점이 있다.
+부속질의는 SELECT 문에 나오는 결과 속성을 FROM 절의 테이블에서만 얻을 수 있고, 조인은 조인한 모든 테이블에서 결과 속성을 얻을 수 있다.
+조인은 부속질의가 할 수 있는 모든 것을 할 수있다.
+한개의 테이블에서만 결과를 얻는 '여러 테이블 질의'는 조인보다 부속질의로 작성하는 것이 훨씬 편하다. 
+*/
+
+/* 집합 연산
+
+SQL문의 결과는 테이블로 나타낸다. 테이블은 투플의 집합이므로 테이블 간의 집합 연산을 이용하여 합집합, 차집합, 교집합을 구할 수 있다.
+SQL에서 집합 연산은 합집합을 UNION, 차집합을 MINUS, 교집합을 INTERSECT로 나타낸다.
+
+Customer테이블에서 도서를 주문한 고객과 주문하지 않은 고객이 같이 있다. 도서를 주문하지 않은 고객을 구하여라.
+{도서를 주문하지 않은 고객} = {전체 고객} - {도서를 주문한 고객}
+
+SELECT name
+FROM Customer
+MINUS
+SELECT name
+FROM Customer
+WHERE custid IN (SELECT custid
+	           FROM Orders);
+
+*/
+
+/* EXISTS
+
+EXISTS는 상관 부속질의문 형식이다. 조건에 맞는 투플이 존재하면 결과에 포함시킨다. NOT EXISTS는 반대.
+EXISTS와 NOT EXISTS는 상관 부속질의문의 다른 형태다. 
+예를 들어 도서를 주문한 고객의 이름을 찾으려면 고객 중 Orders 테이블에 고객번호가 있는지 확인하면 된다.
+
+SELECT name, address
+FROM Customer cs
+WHERE EXISTS (SELECT *
+                        FROM Orders od
+                        WHERE cs.CUSTID = od.CUSTID);
+
+Customer와 Orders의 별칭(Alias)는 해줘도 안해줘도 결과는 같은데 예제에서 별칭을 쓰길래 썻다.
+실행 순서는 cs의 첫행을 가져와 부속질의문의 cs 값으로 입력함(cs.CUSTID).
+od의 어떤 행에서 cs의 고객번호와 같은 것을 찾으면 EXISTS는 참이 되어 cs의 첫 행에 대한 name과 address가 반환됨.
+이렇게 cs의 한행씩 진행되며 이 과정은 cs의 모든 행에 대하여 반복된다.
+
 */
 
 
