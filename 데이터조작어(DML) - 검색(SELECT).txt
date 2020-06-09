@@ -3,11 +3,11 @@
 ★ 들어가기 앞서 쿼리 실행순서
 
 SELECT          -(5)
- FROM          -(1)
-WHERE         -(2)
-GROUP BY     -(3)
-HAVING        -(4)
-ORDER BY      -(6)
+FROM           -(1)
+WHERE          -(2)
+GROUP BY      -(3)
+HAVING         -(4)
+ORDER BY       -(6)
 
 < WHERE 조건 >
 
