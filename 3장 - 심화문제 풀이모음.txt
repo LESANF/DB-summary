@@ -1,0 +1,34 @@
+< 마당서적 테이블을 기준으로 한다. >
+
+(1) 박지성이 구매한 도서의 출판사와 같은 출판사에서 도서를 구매한 고객의 이름
+
+SELECT DISTINCT name
+FROM Customer, Orders, Book
+WHERE Customer.custid=Orders.custid 
+            AND Orders.bookid=Book.bookid 
+            AND publisher IN(SELECT publisher
+                                   FROM Customer, Orders, Book
+                                   WHERE Customer.custid=Orders.custid AND Orders.bookid=Book.bookid AND Customer.name Like '박지성');
+
+
+풀이) 
+
+WHERE절에서 Customer.custid=Orders.custid AND Orders.bookid=Book.bookid 해당 구문은 세 개의 테이블을 이어주는 역할이다.
+Customer와 Book테이블은 서로 공통되는 속성(Column)이 없으므로, Orders의 속성을 참조해야한다.
+
+그리고 publisher IN() 이란 publisher의 투플중 ()안에 해당되는 요소와 매칭된 투플만 뽑아내는 행위이다.
+
+문제의 중점은 박지성이 구매한 도서의 출판사, 그리고 그 출판사의 책을 구입한 사람의 이름이다.
+부속질의를 이용하여 publisher를 SELECT의 요소로 선택하고, 그 중 박지성이라는 이름이 들어간 투플을 LIKE를 통해 뽑아낸다.
+박지성이라는 이름이 들어가는 publisher의 목록을 얻을 수 있고 이는 IN의 요소로 들어가 문제를 해결할 수 있다.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+(2) 두 개 이상의 서로 다른 출판사에서 도서를 구매한 고객의 이름
+
+SELECT name
+FROM (SELECT name, publisher
+          FROM Customer, Orders, Book
+          WHERE Customer.custid=Orders.custid AND Orders.bookid=Book.bookid
+          GROUP BY name, publisher)
+GROUP BY name
+HAVING COUNT(publisher) > 1;
