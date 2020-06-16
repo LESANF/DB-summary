@@ -53,3 +53,25 @@ COUNT함수로 개수를 세고, 조건인 두 개 이상( x > 1)의 조건을 �
 
 (3) 전체 고객의 30% 이상이 구매한 도서
 
+SELECT bookname
+FROM customer, orders, book
+WHERE  customer.custid=orders.custid AND orders.bookid=book.bookid
+GROUP BY bookname
+HAVING COUNT(name) > (select COUNT(name) * 0.3 
+                                     FROM customer);
+
+
+풀이)
+
+전체 고객의 30%를 구하는 식은 쉽다. SELECT COUNT(name) * 0.3 FROM customer; 
+customer 테이블에 존재하는 사람들(name)을 COUNT해서 0.3(30%)를 연산해주면 된다.
+
+우리가 구해야하는건 조건을 충족하는 도서. 즉 도서의이름 bookname이다.
+
+구매를 조회하기 위해 customer, orders, book 세개의 테이블이 연결되야 하고
+도서(bookname)을 기준으로 그룹화 시켜준다.
+정답은 '야구를 부탁해', 'Olympic Champions' 인데, 이 도서는 각각 두 명이 구입한적이 있다.
+
+조건의 30%는 계산하면 COUNT된 5명에 30%이므로 1.5의 연산결과가 나온다.
+하지만 bookname으로 그룹화된 테이블을 기준으로 COUNT(name)하면 bookname으로 그룹화된 대상들에 대하여
+개별적으로 COUNT함수가 적용되면서 위의 두 도서가 2의 결과를 각각 가지게 된다.
