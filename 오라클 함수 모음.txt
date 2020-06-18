@@ -1,0 +1,43 @@
+< EXISTS, NOT EXISTS >
+
+EXISTS 조건은 subquery(부속질의)에 해당하는 행(row)가 적어도 한 개 이상 존재할 경우 SELECT가 실행된다.
+EXISTS 조건은 유효한 SQL 문장인 SELECT, INSERT, UPDATE, DELETE에서 사용 가능 하다.
+
+--------------------------------------
+SELECT COLUMNS
+FROM TABLES
+WHERE EXISTS ( subquery );
+--------------------------------------
+
+실제 사용 예 EXISTS)
+---------------------------------------------------------------------------
+SELECT *
+FROM suppliers
+WHERE EXISTS (SELECT *
+	        FROM orders
+	        WHERE suppliers.supplier_id = orders.supplier_id);
+----------------------------------------------------------------------------
+서브쿼리 조건에 만족하는 모든 레코드(행)를 반환 한다.
+즉, EXISTS A = A라는 데이터를 반환
+
+실제 사용 예2 NOT EXISTS)
+----------------------------------------------------------------------------
+SELECT *
+FROM suppliers
+WHERE NOT EXISTS (SELECT *
+		   FROM orders
+		   WHERE suppliers.supplier_id = orders.supplier_id);
+----------------------------------------------------------------------------
+suppliers.supplier_id = orders.supplier_id 조건에 일치 하지 않는 레코드를 반환 한다.
+즉, NOT EXISTS A = A라는 데이터를 빼고 반환
+
+(EXISTS 와 IN의 차이점)
+
+EXISTS: 단지 해당 row가 존재하는지만 확인하고, 더 이상 수행되지 않는다.
+IN: 실제 존재하는 데이터들의 모든 값까지 확인한다.
+
+따라서, 일반적인 경우에 EXISTS가 더 좋은 성능을 나타내므로, 사용을 권장 한다.
+NOT IN을 사용하면 조건에 맞는 데이터가 있더라 하더라도 NULL이 존재하면 "no rows selected"라고 나온다.
+따라서 NVL를 이용한 NULL 처리가 꼭필요하다
+
+*NVL도 오라클 함수중 하나.
