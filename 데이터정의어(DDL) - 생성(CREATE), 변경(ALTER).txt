@@ -14,7 +14,7 @@ CREATE TABLE 테이블이름
 	  }
 	   [ PRIMARY KEY 속성이름(들) ]
 	   {[ FOREIGN KEY 속성이름 REFERENCES 테이블이름(속성이름)]
-			[ ON DELETE { CASCADE | SET NULL }
+			[ ON DELETE { CASCADE | SET NULL } ]
                }
 	)
 -------------------------------------------------------------------------------------------------------------
